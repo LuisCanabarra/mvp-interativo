@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -101,7 +101,7 @@
         async function detectObjects() {
             const video = document.getElementById('video');
             const predictions = await model.detect(video);
-            console.log(predictions);
+            console.log("Predições detectadas:", predictions); // Log para depuração
 
             // Esconde todos os botões antes de verificar
             esconderBotoes();
@@ -109,6 +109,8 @@
             // Verificar se algum dos objetos de interesse está na lista de objetos detectados
             let objetoDetectado = false;
             for (let i = 0; i < predictions.length; i++) {
+                console.log("Objeto detectado:", predictions[i].class); // Log para verificar os objetos detectados
+
                 if (predictions[i].class === "glasses") {
                     exibirMenu("Óculos"); // Exibe o menu para óculos
                     objetoDetectado = true;
@@ -129,8 +131,10 @@
                 esconderMenu();
             }
 
-            // Rechama a função para continuar a detecção
-            requestAnimationFrame(detectObjects);
+            // Rechama a função para continuar a detecção após 500ms
+            setTimeout(() => {
+                requestAnimationFrame(detectObjects);
+            }, 500); // Atraso de 500ms entre as detecções
         }
 
         // Função que exibe o menu interativo
@@ -171,4 +175,5 @@
 
 </body>
 </html>
+
 
