@@ -7,18 +7,59 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
             text-align: center;
-        }
-        #menuInterativo {
-            margin-top: 20px;
-            display: none;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
             padding: 20px;
         }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
         #videoContainer {
             display: none;
             margin-top: 20px;
+        }
+
+        /* Estilo do menu interativo */
+        #menuInterativo {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            transition: opacity 1s ease-in-out; /* Animação de desaparecimento */
+        }
+
+        #menuInterativo p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        #menuInterativo button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        #menuInterativo button:hover {
+            background-color: #45a049;
+        }
+
+        /* Adicionando uma animação suave para o botão */
+        #menuInterativo button:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -30,7 +71,7 @@
     <!-- Vídeo Incorporado com Iframe -->
     <div id="videoContainer">
         <!-- Substitua o link abaixo com o seu link de incorporação do Streamable -->
-        <div style="position:relative; width:100%; height:0px; padding-bottom:177.778%"><iframe allow="fullscreen;autoplay" allowfullscreen height="100%" src="https://streamable.com/e/drav4p?autoplay=1" width="100%" style="border:none; width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden;"></iframe></div>
+       <div style="position:relative; width:100%; height:0px; padding-bottom:177.778%"><iframe allow="fullscreen;autoplay" allowfullscreen height="100%" src="https://streamable.com/e/drav4p?autoplay=1" width="100%" style="border:none; width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden;"></iframe></div>
     </div>
 
     <!-- Menu Interativo -->
@@ -42,24 +83,40 @@
     </div>
 
     <script>
-        // Função que simula a exibição do menu de interação
+        // Função que exibe o menu com animação suave
         function exibirMenu() {
-            document.getElementById('menuInterativo').style.display = 'block';
+            const menu = document.getElementById('menuInterativo');
+            menu.style.display = 'block';
+            setTimeout(function() {
+                menu.style.opacity = '1'; // Aumenta a opacidade para fazer o menu aparecer suavemente
+            }, 50); // Adiciona um pequeno delay para suavizar a transição
+        }
+
+        // Função que oculta o menu com animação suave
+        function esconderMenu() {
+            const menu = document.getElementById('menuInterativo');
+            menu.style.opacity = '0'; // Faz o menu desaparecer suavemente
+            setTimeout(function() {
+                menu.style.display = 'none'; // Oculta o menu após a animação
+            }, 1000); // Tempo correspondente à animação de opacidade
         }
 
         // Função de compra
         function comprarProduto(produto) {
             alert("Você comprou um " + produto + "!");
-            document.getElementById('menuInterativo').style.display = 'none';
+            esconderMenu();
         }
 
         // Função para iniciar a cena
         function iniciarCena() {
-            // Aqui, você pode adicionar código para controlar a cena (por exemplo, usando timers, eventos, etc.)
-            document.getElementById('videoContainer').style.display = 'block'; // Exibe o vídeo
+            // Exibe o vídeo
+            document.getElementById('videoContainer').style.display = 'block';
 
             // Exibir o menu interativo após 5 segundos do início do vídeo
-            setTimeout(exibirMenu, 5000); // Altere o tempo conforme necessário
+            setTimeout(exibirMenu, 5000); // O menu aparece após 5 segundos
+
+            // Esconder o menu depois de 10 segundos
+            setTimeout(esconderMenu, 15000); // O menu desaparece após 10 segundos
         }
 
         // Iniciar a cena quando o usuário clicar no botão
@@ -68,4 +125,5 @@
 
 </body>
 </html>
+
 
