@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MVP Interativo - Cena com Vídeo</title>
+    <title>MVP Interativo - Reconhecimento de Objetos no Vídeo</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +33,7 @@
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
-            transition: opacity 1s ease-in-out; /* Animação de desaparecimento */
+            transition: opacity 1s ease-in-out;
         }
 
         #menuInterativo p {
@@ -57,9 +57,9 @@
             background-color: #45a049;
         }
 
-        /* Adicionando uma animação suave para o botão */
-        #menuInterativo button:active {
-            transform: scale(0.98);
+        #video {
+            width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -68,62 +68,90 @@
     <h1>Bem-vindo ao MVP Interativo!</h1>
     <p>Assista a cena e interaja com os produtos.</p>
 
-    <!-- Vídeo Incorporado com Iframe -->
+    <!-- Vídeo Incorporado com o seu link do Streamable -->
     <div id="videoContainer">
-        <!-- Substitua o link abaixo com o seu link de incorporação do Streamable -->
-       <div style="position:relative; width:100%; height:0px; padding-bottom:177.778%"><iframe allow="fullscreen;autoplay" allowfullscreen height="100%" src="https://streamable.com/e/drav4p?autoplay=1" width="100%" style="border:none; width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden;"></iframe></div>
+        <div style="position:relative; width:100%; height:0px; padding-bottom:177.778%">
+            <iframe id="video" allow="fullscreen;autoplay" allowfullscreen height="100%" src="https://streamable.com/e/drav4p?autoplay=1" width="100%" style="border:none; width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden;"></iframe>
+        </div>
     </div>
 
-    <!-- Menu Interativo -->
+    <!-- Menu Interativo (Inicialmente Escondido) -->
     <div id="menuInterativo">
         <p>Você pode comprar produtos dessa cena:</p>
-        <button onclick="comprarProduto('Relógio')">Comprar Relógio</button>
-        <button onclick="comprarProduto('Óculos')">Comprar Óculos</button>
-        <button onclick="comprarProduto('Celular')">Comprar Celular</button>
+        <!-- Botões que serão dinamicamente exibidos -->
+        <button id="btnOculos" style="display:none" onclick="comprarProduto('Óculos')">Comprar Óculos</button>
+        <button id="btnGravata" style="display:none" onclick="comprarProduto('Gravata')">Comprar Gravata</button>
+        <button id="btnJanela" style="display:none" onclick="comprarProduto('Janela')">Comprar Janela</button>
     </div>
 
+    <!-- Script do TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
     <script>
-        // Função que exibe o menu com animação suave
-        function exibirMenu() {
-            const menu = document.getElementById('menuInterativo');
-            menu.style.display = 'block';
-            setTimeout(function() {
-                menu.style.opacity = '1'; // Aumenta a opacidade para fazer o menu aparecer suavemente
-            }, 50); // Adiciona um pequeno delay para suavizar a transição
+        let model;
+
+        // Função que carrega o modelo COCO-SSD
+        async function loadModel() {
+            model = await cocoSsd.load();
+            console.log("Modelo carregado!");
         }
 
-        // Função que oculta o menu com animação suave
-        function esconderMenu() {
+        // Função que faz a detecção no vídeo
+        async function detectObjects() {
+            const video = document.getElementById('video');
+            const predictions = await model.detect(video);
+            console.log(predictions);
+
+            // Esconde todos os botões antes de verificar
+            esconderBotoes();
+
+            // Verificar se algum dos objetos de interesse está na lista de objetos detectados
+            for (let i = 0; i < predictions.length; i++) {
+                if (predictions[i].class === "glasses") {
+                    exibirMenu("Óculos"); // Exibe o menu para óculos
+                    break; // Exibe o menu apenas uma vez
+                } else if (predictions[i].class === "tie") {
+                    exibirMenu("Gravata"); // Exibe o menu para gravata
+                    break;
+                } else if (predictions[i].class === "window") {
+                    exibirMenu("Janela"); // Exibe o menu para janela
+                    break;
+                }
+            }
+
+            // Rechama a função para continuar a detecção
+            requestAnimationFrame(detectObjects);
+        }
+
+        // Função que exibe o menu interativo
+        function exibirMenu(item) {
             const menu = document.getElementById('menuInterativo');
-            menu.style.opacity = '0'; // Faz o menu desaparecer suavemente
-            setTimeout(function() {
-                menu.style.display = 'none'; // Oculta o menu após a animação
-            }, 1000); // Tempo correspondente à animação de opacidade
+            menu.style.display = 'block';
+
+            // Exibe o botão correspondente ao item encontrado
+            document.getElementById(`btn${item}`).style.display = 'block';
+        }
+
+        // Função para esconder todos os botões
+        function esconderBotoes() {
+            document.getElementById('btnOculos').style.display = 'none';
+            document.getElementById('btnGravata').style.display = 'none';
+            document.getElementById('btnJanela').style.display = 'none';
         }
 
         // Função de compra
         function comprarProduto(produto) {
-            alert("Você comprou um " + produto + "!");
-            esconderMenu();
+            alert("Você comprou " + produto + "!");
         }
 
-        // Função para iniciar a cena
-        function iniciarCena() {
-            // Exibe o vídeo
-            document.getElementById('videoContainer').style.display = 'block';
-
-            // Exibir o menu interativo após 5 segundos do início do vídeo
-            setTimeout(exibirMenu, 5000); // O menu aparece após 5 segundos
-
-            // Esconder o menu depois de 10 segundos
-            setTimeout(esconderMenu, 15000); // O menu desaparece após 10 segundos
-        }
-
-        // Iniciar a cena quando o usuário clicar no botão
-        iniciarCena();
+        // Inicializar
+        window.onload = function() {
+            loadModel().then(() => {
+                detectObjects();
+            });
+        };
     </script>
 
 </body>
 </html>
-
-
