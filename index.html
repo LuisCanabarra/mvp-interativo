@@ -149,9 +149,11 @@
         window.onload = function() {
             loadModel().then(() => {
                 detectObjects();
+                document.getElementById('videoContainer').style.display = 'block'; // Mostrar o vídeo após o carregamento do modelo
             });
         };
     </script>
 
 </body>
 </html>
+
