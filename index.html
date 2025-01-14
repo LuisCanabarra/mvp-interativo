@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -107,17 +107,26 @@
             esconderBotoes();
 
             // Verificar se algum dos objetos de interesse está na lista de objetos detectados
+            let objetoDetectado = false;
             for (let i = 0; i < predictions.length; i++) {
                 if (predictions[i].class === "glasses") {
                     exibirMenu("Óculos"); // Exibe o menu para óculos
+                    objetoDetectado = true;
                     break; // Exibe o menu apenas uma vez
                 } else if (predictions[i].class === "tie") {
                     exibirMenu("Gravata"); // Exibe o menu para gravata
+                    objetoDetectado = true;
                     break;
                 } else if (predictions[i].class === "window") {
                     exibirMenu("Janela"); // Exibe o menu para janela
+                    objetoDetectado = true;
                     break;
                 }
+            }
+
+            // Se nenhum objeto foi detectado, esconda o menu
+            if (!objetoDetectado) {
+                esconderMenu();
             }
 
             // Rechama a função para continuar a detecção
@@ -138,6 +147,12 @@
             document.getElementById('btnOculos').style.display = 'none';
             document.getElementById('btnGravata').style.display = 'none';
             document.getElementById('btnJanela').style.display = 'none';
+        }
+
+        // Função para esconder o menu
+        function esconderMenu() {
+            const menu = document.getElementById('menuInterativo');
+            menu.style.display = 'none';
         }
 
         // Função de compra
